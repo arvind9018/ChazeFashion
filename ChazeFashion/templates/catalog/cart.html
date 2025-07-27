@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Cart - StyleNest{% endblock %}
+
+{% block content %}
+<style>
+    /* Specific styles for Cart page */
+    .cart-page-header {
+        color: var(--tw-colors-sn-text-light); /* Use light text for header */
+        font-family: 'Playfair Display', serif; /* Use heading font */
+        margin-bottom: 2.5rem; /* More space below header */
+    }
+
+    .cart-table-container {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        overflow: hidden; /* Ensures rounded corners */
+    }
+
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse; /* For clean lines */
+    }
+
+    .cart-table th {
+        background-color: var(--tw-colors-sn-bg-primary); /* Darker background for header */
+        color: var(--tw-colors-sn-text-light);
+        padding: 1.25rem 1.5rem; /* More padding */
+        text-align: left;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--tw-colors-sn-border);
+    }
+    .cart-table th:last-child { text-align: center; } /* Actions column centered */
+    .cart-table th:nth-child(2), .cart-table th:nth-child(4) { text-align: right; } /* Price/Total aligned right */
+
+
+    .cart-table td {
+        padding: 1.5rem; /* Increased padding */
+        vertical-align: middle;
+        border-bottom: 1px solid var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-text-light);
+    }
+    .cart-table tbody tr:hover {
+        background-color: rgba(224, 187, 228, 0.05); /* Subtle hover effect with accent color */
+    }
+
+    .product-thumbnail-cart {
+        background-color: var(--tw-colors-sn-bg-primary); /* Darker thumbnail background */
+        border: 1px solid var(--tw-colors-sn-border);
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    .product-thumbnail-cart:hover {
+        transform: scale(1.05);
+    }
+
+    .product-details-cart .font-bold {
+        color: var(--tw-colors-sn-text-light);
+    }
+    .product-details-cart .text-sm {
+        color: var(--tw-colors-sn-text-muted);
+    }
+    .low-stock-warning {
+        color: var(--tw-colors-sn-error); /* Use defined error color */
+        font-weight: 500;
+        margin-top: 0.5rem;
+    }
+
+    /* Quantity input and buttons */
+    .quantity-input-cart {
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-text-light);
+        text-align: center;
+        font-weight: 500;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        padding: 0.5rem;
+        height: 3rem; /* Fixed height for consistency */
+        font-size: 1.125rem; /* Larger font */
+    }
+    .quantity-input-cart:focus {
+        border-color: var(--tw-colors-sn-accent-main);
+        box-shadow: 0 0 0 2px rgba(224, 187, 228, 0.5);
+        outline: none;
+    }
+    .quantity-button-cart {
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-accent-main);
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        height: 3rem; /* Fixed height for consistency */
+        width: 3rem; /* Fixed width for consistency */
+        font-size: 1.25rem; /* Larger icon */
+    }
+    .quantity-button-cart:hover {
+        background-color: var(--tw-colors-sn-accent-light);
+        color: var(--tw-colors-sn-bg-primary);
+        border-color: var(--tw-colors-sn-accent-light);
+    }
+
+    /* Price and Total styling */
+    .item-price, .item-total {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--tw-colors-sn-accent-main); /* Accent color for prices */
+    }
+    .grand-total-label {
+        color: var(--tw-colors-sn-text-light);
+        font-size: 1.75rem; /* Larger total label */
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .grand-total-amount {
+        color: var(--tw-colors-sn-accent-main);
+        font-size: 2rem; /* Even larger total amount */
+        font-weight: 700;
+    }
+
+    /* Action buttons below table */
+    .cart-action-buttons {
+        margin-top: 2rem;
+        flex-wrap: wrap; /* Allow wrapping on small screens */
+    }
+    .cart-action-buttons .btn {
+        min-width: 180px; /* Ensure buttons are not too small */
+        font-size: 1.125rem; /* Larger font size for buttons */
+        padding: 0.8rem 1.5rem;
+        border-radius: 0.75rem;
+    }
+
+    /* Empty cart state */
+    .empty-cart-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        border-radius: 1rem;
+        padding: 4rem 2rem;
+    }
+    .empty-cart-icon-circle {
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+    }
+    .empty-cart-text {
+        color: var(--tw-colors-sn-text-muted);
+        line-height: 1.6;
+    }
+</style>
+
+<div class="container mx-auto px-6 py-12 animate-fade-in">
+    <h1 class="text-4xl md:text-5xl font-heading text-center cart-page-header">
+        <i class="fas fa-shopping-bag mr-4 text-sn-accent-main"></i> {# More elegant shopping bag icon #}
+        Your Shopping Cart
+    </h1>
+
+    {% if cart_items %}
+    <form method="post" action="{% url 'cart' %}">
+        {% csrf_token %}
+        <div class="cart-table-container">
+            <div class="overflow-x-auto">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Product</th>
+                            <th class="text-right">Price</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-right">Total</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr class="transition-colors duration-200">
+                            <td>
+                                <div class="flex items-center space-x-4">
+                                    {% if item.product.pr_images %}
+                                    <div class="product-thumbnail-cart w-20 h-20 flex-shrink-0">
+                                        <img src="{{ item.product.pr_images.url }}" alt="{{ item.product.pr_name }}"
+                                            class="w-full h-full object-cover" />
+                                    </div>
+                                    {% else %}
+                                    <div class="product-thumbnail-cart w-20 h-20 flex-shrink-0 flex items-center justify-center">
+                                        <i class="fas fa-box-open text-3xl text-sn-text-muted opacity-50"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div class="product-details-cart">
+                                        <a href="{% url 'product_detail' item.product.pr_id %}" class="font-bold text-lg hover:text-sn-accent-main transition-colors">{{ item.product.pr_name }}</a>
+                                        <div class="text-sm">{{ item.product.pr_cate }}</div>
+                                        {% if item.product.pr_stk_quant < 5 and item.product.pr_stk_quant > 0 %} 
+                                        <div class="text-xs low-stock-warning">
+                                            <i class="fas fa-exclamation-triangle"></i> Only {{ item.product.pr_stk_quant }} left!
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="text-right item-price">
+                                ${{ item.product.pr_price|floatformat:2 }}
+                            </td>
+
+                            <td class="text-center">
+                                <div class="flex items-center justify-center">
+                                    <div class="join border border-sn-border rounded-lg overflow-hidden">
+                                        <button class="btn join-item quantity-button-cart" type="button" onclick="decrementQuantity(this, {{ item.product.pr_stk_quant }})">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1"
+                                            max="{{ item.product.pr_stk_quant }}"
+                                            class="input join-item quantity-input-cart w-24" data-item-id="{{ item.id }}" />
+                                        <button class="btn join-item quantity-button-cart" type="button" onclick="incrementQuantity(this, {{ item.product.pr_stk_quant }})">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="text-right item-total">
+                                ${{ item.get_item_total|floatformat:2 }}
+                            </td>
+
+                            <td class="text-center">
+                                <button type="submit" name="remove_item_{{ item.id }}" class="btn btn-ghost text-sn-error hover:bg-sn-error hover:text-white transition-colors duration-200 btn-circle text-xl">
+                                    <i class="fas fa-trash-alt"></i> {# More explicit trash icon #}
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right grand-total-label">
+                                Grand Total:
+                            </td>
+                            <td class="text-right grand-total-amount">
+                                ${{ total|floatformat:2 }}
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-end gap-5 cart-action-buttons">
+            <a href="{% url 'product_list' %}"
+                class="btn btn-outline-sn order-2 sm:order-1"> {# Order changed for visual flow #}
+                <i class="fas fa-arrow-left mr-3"></i> Continue Shopping
+            </a>
+
+            <button type="submit" name="update_cart" class="btn btn-outline-sn order-1 sm:order-2">
+                <i class="fas fa-sync-alt mr-3"></i> Update Cart
+            </button>
+            
+            <a href="{% url 'checkout' %}" class="btn btn-primary-sn order-3">
+                Proceed to Checkout <i class="fas fa-credit-card ml-3"></i>
+            </a>
+        </div>
+    </form>
+
+    {% else %}
+    <div class="text-center py-16 empty-cart-card animate-fade-in">
+        <div class="w-24 h-24 empty-cart-icon-circle rounded-full flex items-center justify-center mx-auto mb-8 animate-border-pulse">
+            <i class="fas fa-shopping-cart text-5xl text-sn-accent-main"></i> {# Consistent icon #}
+        </div>
+        <h2 class="text-3xl font-heading text-sn-text-light mb-4">Your Shopping Cart is Empty</h2>
+        <p class="text-lg empty-cart-text max-w-md mx-auto mb-10">
+            Looks like you haven't added any items to your cart yet. Discover exquisite fashion to define your unique style!
+        </p>
+        <a href="{% url 'product_list' %}" class="btn btn-primary-sn px-10 text-lg">
+            <i class="fas fa-bag-shopping mr-3"></i> Start Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // These functions now directly operate on the input element passed to them
+    // And ensure the quantity stays within min/max bounds set by Django
+    function updateQuantity(inputElement, change, maxQuantity) {
+        let currentValue = parseInt(inputElement.value);
+        let newValue = currentValue + change;
+
+        // Ensure new value is within min (1) and max (product stock)
+        newValue = Math.max(1, Math.min(newValue, maxQuantity));
+        
+        // Update the input value
+        inputElement.value = newValue;
+    }
+
+    function incrementQuantity(buttonElement, maxQuantity) {
+        const inputElement = buttonElement.previousElementSibling; // The input is the sibling before the plus button
+        updateQuantity(inputElement, 1, maxQuantity);
+    }
+    
+    function decrementQuantity(buttonElement, maxQuantity) {
+        const inputElement = buttonElement.nextElementSibling; // The input is the sibling after the minus button
+        updateQuantity(inputElement, -1, maxQuantity);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - StyleNest{% endblock %}
+
+{% block content %}
+<style>
+    /* Specific styles for Login page */
+    .login-container {
+        min-height: calc(100vh - 8rem); /* Adjust for header/footer height */
+        background-color: var(--tw-colors-sn-bg-primary); /* Primary dark background */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .login-card {
+        background-color: var(--tw-colors-sn-bg-secondary); /* Lighter dark for the card */
+        border: 1px solid var(--tw-colors-sn-border);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6); /* Deeper shadow */
+        border-radius: 1.5rem; /* More rounded corners */
+        overflow: hidden;
+        width: 100%;
+        max-width: 28rem; /* Slightly wider card for better form layout */
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother transition */
+    }
+    .login-card:hover {
+        transform: translateY(-5px) scale(1.005); /* Subtle lift and scale */
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .card-header-login {
+        background-image: linear-gradient(to right, var(--tw-colors-sn-accent-main), var(--tw-colors-sn-accent-light));
+        padding: 3rem 2rem; /* More padding for a grander header */
+        text-align: center;
+        color: var(--tw-colors-sn-bg-primary); /* Dark text on gradient */
+        position: relative;
+        overflow: hidden;
+    }
+    .card-header-login::before { /* Subtle pattern overlay */
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+        z-index: 1;
+    }
+    .card-header-login .content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .card-header-login .logo-icon {
+        font-size: 3.5rem; /* Larger icon */
+        margin-bottom: 0.5rem;
+        color: var(--tw-colors-sn-bg-primary);
+        display: block; /* Ensures it takes full width for margin */
+    }
+    .card-header-login .logo-text {
+        font-size: 2.5rem; /* Larger text */
+        font-family: 'Playfair Display', serif; /* Consistent logo font */
+        font-weight: 700;
+        color: var(--tw-colors-sn-bg-primary);
+        line-height: 1; /* Adjust line height for logo */
+    }
+    .card-header-login .welcome-text {
+        margin-top: 1.5rem;
+        font-size: 1.75rem; /* Larger welcome text */
+        font-weight: 600;
+        color: var(--tw-colors-sn-bg-primary);
+    }
+
+    .card-body-login {
+        padding: 2.5rem; /* Consistent padding */
+        background-color: var(--tw-colors-sn-bg-secondary);
+    }
+
+    /* Form control styling */
+    .form-control-login label .label-text {
+        color: var(--tw-colors-sn-text-light); /* Light text for labels */
+        font-weight: 500;
+        font-size: 1.05rem; /* Slightly larger label text */
+    }
+
+    .input-with-icon {
+        background-color: var(--tw-colors-sn-bg-primary); /* Darker input background */
+        border: 1px solid var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-text-light);
+        padding-left: 3rem; /* Space for icon */
+        padding-right: 1.25rem; /* Standard padding on right */
+        height: 3.5rem; /* Taller input fields */
+        font-size: 1.125rem; /* Larger input text */
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .input-with-icon:focus {
+        border-color: var(--tw-colors-sn-accent-main);
+        box-shadow: 0 0 0 2px rgba(224, 187, 228, 0.5); /* Subtle glow */
+        outline: none;
+    }
+    .input-icon {
+        color: var(--tw-colors-sn-text-muted); /* Muted icon color */
+        left: 1.25rem;
+        font-size: 1.125rem; /* Icon size matches text */
+    }
+
+    /* Buttons */
+    .btn-login-submit {
+        height: 3.5rem; /* Consistent button height */
+        font-size: 1.3rem; /* Larger text */
+        letter-spacing: 0.08em; /* More pronounced letter spacing */
+    }
+
+    .signup-section {
+        margin-top: 2rem; /* More space */
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--tw-colors-sn-border); /* Separator */
+    }
+    .signup-section p {
+        color: var(--tw-colors-sn-text-muted); /* Muted text for prompt */
+        font-size: 1.05rem;
+        margin-bottom: 1rem;
+    }
+    .btn-signup-link {
+        font-size: 1.2rem; /* Larger link button */
+        padding: 0.8rem 2rem;
+        height: auto; /* Allow padding to control height */
+    }
+
+    /* Message Alerts */
+    .alert {
+        border-radius: 0.75rem;
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        color: var(--tw-colors-sn-bg-primary); /* Dark text on alert bg */
+        margin-bottom: 1.5rem; /* More space below alerts */
+    }
+    .alert-error { background-color: var(--tw-colors-sn-error); color: white; border-left: 5px solid darken(var(--tw-colors-sn-error), 10%); }
+    .alert-info { background-color: var(--tw-colors-sn-accent-main); border-left: 5px solid darken(var(--tw-colors-sn-accent-main), 10%); }
+    .alert svg { color: inherit; font-size: 1.5rem; margin-right: 0.75rem; } /* Larger icons */
+    .alert span { flex: 1; }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="card-header-login">
+            <div class="content">
+                <i class="fas fa-gem logo-icon"></i>
+                <span class="logo-text">StyleNest</span>
+                <h2 class="welcome-text">Your Style Awaits.</h2>
+            </div>
+        </div>
+        
+        <div class="card-body-login">
+            {% if messages %}
+                <div>
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %}">
+                        <div>
+                            <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <form method="post" class="space-y-6 animate-fade-in">
+                {% csrf_token %}
+                
+                <div class="form-control form-control-login">
+                    <label class="label">
+                        <span class="label-text">Username or Email</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center input-icon">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" name="username" placeholder="Enter your username or email" 
+                               class="input input-bordered w-full input-with-icon"
+                               required autofocus />
+                    </div>
+                </div>
+                
+                <div class="form-control form-control-login">
+                    <label class="label">
+                        <span class="label-text">Password</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center input-icon">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" name="password" placeholder="Enter your password" 
+                               class="input input-bordered w-full input-with-icon"
+                               required />
+                    </div>
+                </div>
+                
+                <div class="form-control mt-8">
+                    <button type="submit" 
+                            class="btn btn-primary-sn w-full btn-login-submit">
+                        <i class="fas fa-sign-in-alt mr-3"></i> Secure Login
+                    </button>
+                </div>
+            </form>
+            
+            <div class="text-center signup-section">
+                <p>New to StyleNest?</p>
+                <a href="{% url 'signup' %}" 
+                   class="btn btn-outline-sn btn-wide btn-signup-link">
+                    <i class="fas fa-user-plus mr-3"></i> Create Your Account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

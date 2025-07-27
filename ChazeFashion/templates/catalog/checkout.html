@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - StyleNest{% endblock %}
+
+{% block content %}
+<style>
+    /* Specific styles for Checkout page */
+    .checkout-header {
+        color: var(--tw-colors-sn-text-light);
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 3rem; /* More space below header */
+        letter-spacing: -0.02em; /* Tighter for professionalism */
+    }
+
+    .order-summary-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        border-radius: 1rem;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); /* Deeper shadow for cards */
+        padding: 2.5rem; /* More generous padding */
+        animation: fade-in 0.7s ease-out forwards;
+    }
+
+    .order-summary-title {
+        color: var(--tw-colors-sn-text-light);
+        font-family: 'Playfair Display', serif;
+        font-size: 2.25rem; /* Larger title */
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--tw-colors-sn-border); /* Subtle separator */
+        padding-bottom: 1rem;
+    }
+
+    .order-summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+
+    .order-summary-table th {
+        background-color: var(--tw-colors-sn-bg-primary); /* Darker header background */
+        color: var(--tw-colors-sn-text-muted); /* Muted header text */
+        padding: 1rem 1.25rem;
+        text-align: left;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--tw-colors-sn-border);
+        border-top: 1px solid var(--tw-colors-sn-border); /* Top border for header */
+    }
+
+    .order-summary-table td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-text-light);
+    }
+    .order-summary-table td:nth-child(2),
+    .order-summary-table td:nth-child(3),
+    .order-summary-table td:nth-child(4) {
+        text-align: right; /* Align Qty, Price, Total to the right */
+    }
+    .order-summary-table tbody tr:last-child td {
+        border-bottom: none; /* No border on last row of body */
+    }
+
+    .order-summary-table tfoot td {
+        padding-top: 1.5rem;
+        font-size: 1.5rem; /* Larger footer total */
+        font-weight: 700;
+        color: var(--tw-colors-sn-text-light);
+    }
+    .order-summary-table tfoot td:last-child {
+        color: var(--tw-colors-sn-accent-main); /* Accent color for grand total */
+        font-size: 2rem; /* Even larger grand total amount */
+    }
+
+    /* Address & Payment sections */
+    .section-title-checkout {
+        color: var(--tw-colors-sn-text-light);
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem; /* Consistent section title size */
+        margin-bottom: 1.25rem;
+        padding-top: 1.5rem; /* Space between sections */
+        border-top: 1px solid var(--tw-colors-sn-border);
+        padding-top: 2rem;
+    }
+    .section-title-checkout:first-of-type {
+        border-top: none; /* No top border for the first section title */
+        padding-top: 0;
+    }
+
+    .info-card-checkout {
+        background-color: var(--tw-colors-sn-bg-primary); /* Darker background for info cards */
+        border: 1px solid var(--tw-colors-sn-border);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        color: var(--tw-colors-sn-text-muted); /* Muted text for info */
+        line-height: 1.6;
+        animation: fade-in 0.8s ease-out forwards;
+    }
+    .info-card-checkout strong {
+        color: var(--tw-colors-sn-text-light); /* Stronger text for names/main info */
+        font-weight: 600;
+    }
+    .info-card-checkout .btn-outline-sn {
+        margin-top: 1.25rem;
+        font-size: 0.95rem;
+        padding: 0.6rem 1.2rem;
+    }
+
+    .place-order-btn-container {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--tw-colors-sn-border);
+    }
+    .place-order-btn {
+        font-size: 1.5rem; /* Larger font for final action */
+        padding: 1rem 2.5rem;
+    }
+
+    /* Empty cart state for checkout */
+    .empty-checkout-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        border-radius: 1rem;
+        padding: 4rem 2rem;
+        animation: fade-in 0.7s ease-out forwards;
+    }
+    .empty-checkout-icon-circle {
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+    }
+    .empty-checkout-text {
+        color: var(--tw-colors-sn-text-muted);
+        line-height: 1.6;
+    }
+</style>
+
+<div class="container mx-auto px-6 py-12">
+    <h1 class="text-4xl md:text-5xl font-heading text-center checkout-header animate-slide-down">
+        <i class="fas fa-receipt mr-4 text-sn-accent-main"></i> {# Receipt icon for checkout #}
+        Finalize Your Order
+    </h1>
+
+    {% if cart_items %}
+        <div class="order-summary-card mx-auto max-w-3xl"> {# Wider max-width for better layout #}
+            <h2 class="order-summary-title">Order Summary</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="order-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th class="text-right">Qty</th>
+                            <th class="text-right">Price</th>
+                            <th class="text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.product.pr_name }}</td>
+                            <td class="text-right">{{ item.quantity }}</td>
+                            <td class="text-right">${{ item.product.pr_price|floatformat:2 }}</td>
+                            <td class="text-right">${{ item.get_item_total|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right">Grand Total:</td>
+                            <td class="text-right">${{ total_price|floatformat:2 }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="space-y-6"> {# Increased space between sections #}
+                <h3 class="section-title-checkout">Shipping Address</h3>
+                <div class="info-card-checkout">
+                    <p><strong>{{ request.user.username }}</strong></p>
+                    <p class="mb-2">{{ request.user.userprofile.address|default:"No address saved. Please update your profile." }}</p>
+                    <p>{{ request.user.userprofile.phone|default:"No phone saved. Please update your profile." }}</p>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-sn btn-sm mt-3">
+                        <i class="fas fa-user-edit mr-2"></i> Update Profile Address
+                    </a>
+                </div>
+
+                <h3 class="section-title-checkout">Payment Method</h3>
+                <div class="info-card-checkout">
+                    <p class="text-sn-text-light font-medium mb-2">Cash on Delivery (COD)</p>
+                    <p>Payment will be collected at the time of delivery. Please have the exact amount ready.</p>
+                    {# In a real app, integrate with payment gateways here #}
+                    {# <div class="mt-4 text-sm text-sn-text-muted">More payment options coming soon!</div> #}
+                </div>
+            </div>
+
+            <div class="flex justify-end place-order-btn-container">
+                <button class="btn btn-primary-sn btn-lg place-order-btn">
+                    <i class="fas fa-lock mr-3"></i> Place Order Securely
+                </button>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-16 empty-checkout-card">
+            <div class="w-24 h-24 empty-checkout-icon-circle rounded-full flex items-center justify-center mx-auto mb-8 animate-border-pulse">
+                <i class="fas fa-shopping-basket text-5xl text-sn-accent-main"></i> {# Shopping basket icon #}
+            </div>
+            <h2 class="text-3xl font-heading text-sn-text-light mb-4">Your Shopping Cart is Empty</h2>
+            <p class="text-lg empty-checkout-text max-w-md mx-auto mb-10">
+                Looks like there are no items to checkout. Head back to the shop to find your perfect style!
+            </p>
+            <a href="{% url 'product_list' %}" class="btn btn-primary-sn px-10 text-lg">
+                <i class="fas fa-bag-shopping mr-3"></i> Start Shopping
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

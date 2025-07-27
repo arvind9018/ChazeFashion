@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.pr_name }} - StyleNest{% endblock %}
+
+{% block content %}
+<style>
+    /* Specific styles for Product Detail page */
+    .product-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1rem; /* Consistent with card-sn */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Consistent shadow */
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .product-image-container:hover {
+        transform: scale(1.01); /* Subtle lift on hover */
+    }
+
+    .product-image {
+        transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother zoom */
+    }
+
+    .product-image-container:hover .product-image {
+        transform: scale(1.08); /* More pronounced zoom on hover */
+    }
+
+    /* Thumbnail styling */
+    .thumbnail-item {
+        border: 2px solid transparent;
+        transition: border-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+    .thumbnail-item:hover {
+        border-color: var(--tw-colors-sn-accent-main);
+        transform: translateY(-2px);
+    }
+    .thumbnail-item.active {
+        border-color: var(--tw-colors-sn-accent-main);
+        box-shadow: 0 0 0 1px var(--tw-colors-sn-accent-main); /* Inner glow for active */
+    }
+
+    /* Quantity Input Styling */
+    .quantity-input {
+        background-color: var(--tw-colors-sn-bg-primary);
+        border-color: var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-text-light);
+        text-align: center;
+        font-weight: 500;
+        transition: border-color 0.3s ease;
+    }
+    .quantity-input:focus {
+        border-color: var(--tw-colors-sn-accent-main);
+        outline: none;
+    }
+
+    .quantity-btn {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border-color: var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-text-light);
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .quantity-btn:hover {
+        background-color: var(--tw-colors-sn-accent-light);
+        color: var(--tw-colors-sn-bg-primary);
+        border-color: var(--tw-colors-sn-accent-light);
+    }
+
+    /* Reviews Section Styling */
+    .review-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .review-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    .review-avatar {
+        background-color: var(--tw-colors-sn-accent-light); /* Accent color for placeholder avatar */
+        color: var(--tw-colors-sn-bg-primary);
+    }
+    .review-text-prose {
+        color: var(--tw-colors-sn-text-muted); /* Muted text for review comments */
+    }
+    .review-empty-state {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    .review-empty-icon-circle {
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+    }
+</style>
+
+<div class="container mx-auto px-6 py-12 animate-fade-in">
+    <div class="text-sm breadcrumbs mb-10 text-sn-text-muted animate-slide-down">
+        <ul>
+            <li><a href="{% url 'home' %}" class="text-sn-text-muted hover:text-sn-accent-main transition-colors">Home</a></li> 
+            <li><a href="{% url 'product_list' %}" class="text-sn-text-muted hover:text-sn-accent-main transition-colors">Products</a></li>
+            <li class="font-semibold text-sn-text-light">{{ product.pr_name }}</li>
+        </ul>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div class="lg:sticky lg:top-8 animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="product-image-container aspect-square bg-sn-bg-secondary">
+                <figure class="w-full h-full">
+                    {% if product.pr_images %}
+                        <img src="{{ product.pr_images.url }}" alt="{{ product.pr_name }}" 
+                             class="w-full h-full object-cover product-image" />
+                        {% if product.pr_offers %}
+                        <div class="absolute top-6 right-6 badge text-lg px-4 py-3 font-bold bg-sn-accent-main text-sn-bg-primary shadow-xl animate-pulse">
+                            {{ product.pr_offers }}
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="w-full h-full bg-sn-bg-primary flex items-center justify-center">
+                            <i class="fas fa-tshirt text-8xl text-sn-text-muted opacity-40"></i>
+                        </div>
+                    {% endif %}
+                </figure>
+                
+                <div class="p-4 flex space-x-3 overflow-x-auto justify-center md:justify-start">
+                    {# In a real scenario, you'd loop through product.images here #}
+                    <div class="w-20 h-20 rounded-lg bg-sn-bg-primary flex-shrink-0 thumbnail-item active cursor-pointer"></div>
+                    <div class="w-20 h-20 rounded-lg bg-sn-bg-primary flex-shrink-0 thumbnail-item cursor-pointer"></div>
+                    <div class="w-20 h-20 rounded-lg bg-sn-bg-primary flex-shrink-0 thumbnail-item cursor-pointer"></div>
+                    <div class="w-20 h-20 rounded-lg bg-sn-bg-primary flex-shrink-0 thumbnail-item cursor-pointer"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="space-y-8 animate-slide-up-content" style="animation-delay: 0.2s;">
+            <div>
+                <h1 class="text-5xl font-heading mb-4 text-sn-text-light">{{ product.pr_name }}</h1>
+                <div class="flex flex-wrap gap-3 mb-5">
+                    <span class="badge badge-lg text-sm bg-sn-accent-main text-sn-bg-primary font-semibold border-0">{{ product.pr_cate }}</span>
+                    <span class="badge badge-lg text-sm bg-sn-accent-light text-sn-bg-primary font-semibold border-0">{{ product.pr_season }}</span>
+                    {% if product.pr_brand %}
+                        <span class="badge badge-lg text-sm bg-sn-bg-primary text-sn-text-light font-semibold border border-sn-border">{{ product.pr_brand }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-center gap-4 mb-5">
+                    <div class="rating rating-lg">
+                        {% for i in "12345" %}
+                            <input type="radio" 
+                                   class="mask mask-star-2 {% if forloop.counter <= product.pr_reviews %}bg-sn-accent-main{% else %}bg-sn-text-muted opacity-30{% endif %}" 
+                                   disabled />
+                        {% endfor %}
+                    </div>
+                    <span class="text-sn-text-muted text-lg">
+                        {{ product.pr_reviews|floatformat:1 }} ({{ product.pr_reviews }} reviews)
+                    </span>
+                </div>
+                
+                <div class="text-6xl font-bold text-sn-accent-main mb-6">
+                    ${{ product.pr_price|floatformat:2 }}
+                    {% if product.original_price %}
+                        <span class="text-2xl text-sn-text-muted line-through ml-3">${{ product.original_price|floatformat:2 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-8">
+                    {% if product.pr_stk_quant > 0 %}
+                        <span class="badge text-lg px-4 py-3 bg-sn-success text-sn-bg-primary font-semibold gap-2 border-0">
+                            <i class="fas fa-check-circle"></i>
+                            {% if product.pr_stk_quant < 5 %}
+                                Limited Stock (Only {{ product.pr_stk_quant }} left!)
+                            {% else %}
+                                In Stock ({{ product.pr_stk_quant }} available)
+                            {% endif %}
+                        </span>
+                    {% else %}
+                        <span class="badge text-lg px-4 py-3 bg-sn-error text-white font-semibold gap-2 border-0">
+                            <i class="fas fa-times-circle"></i>
+                            Currently Out of Stock
+                        </span>
+                    {% endif %}
+                </div>
+                
+                {% if product.description %}
+                    <div class="prose max-w-none mb-8 text-sn-text-light leading-relaxed">
+                        <h3 class="text-2xl font-semibold mb-3 text-sn-text-light">About This Item</h3>
+                        <p class="text-sn-text-muted">{{ product.description|linebreaks }}</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="card card-sn p-8 rounded-2xl">
+                <h2 class="card-title text-3xl font-heading mb-6 text-sn-text-light">Specifications</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
+                    {% if product.pr_fabric %}
+                        <div class="flex flex-col">
+                            <span class="font-semibold text-sn-text-light mb-1">Fabric:</span>
+                            <span class="text-sn-text-muted">{{ product.pr_fabric }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if product.pr_texture %}
+                        <div class="flex flex-col">
+                            <span class="font-semibold text-sn-text-light mb-1">Texture:</span>
+                            <span class="text-sn-text-muted">{{ product.pr_texture }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if product.pr_dimensions %}
+                        <div class="flex flex-col">
+                            <span class="font-semibold text-sn-text-light mb-1">Dimensions:</span>
+                            <span class="text-sn-text-muted">{{ product.pr_dimensions }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if product.pr_weights %}
+                        <div class="flex flex-col">
+                            <span class="font-semibold text-sn-text-light mb-1">Weight:</span>
+                            <span class="text-sn-text-muted">{{ product.pr_weights }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if product.pr_offers %}
+                        <div class="md:col-span-2 bg-sn-bg-primary p-5 rounded-xl border border-sn-accent-main border-opacity-30">
+                            <div class="flex items-center text-sn-accent-main">
+                                <i class="fas fa-tags text-2xl mr-3"></i>
+                                <div>
+                                    <span class="font-semibold text-xl">Special Offer:</span>
+                                    <span class="ml-2 text-sn-text-light">{{ product.pr_offers }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap gap-5 pt-4">
+                {% if product.pr_stk_quant > 0 %}
+                    <form action="{% url 'add_to_cart' product.pr_id %}" method="post" class="flex items-center gap-5 flex-grow">
+                        {% csrf_token %}
+                        <div class="form-control">
+                            <div class="join border border-sn-border rounded-lg overflow-hidden">
+                                <button class="btn join-item quantity-btn w-12 h-12 text-xl" type="button" onclick="decrementQuantity()">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" name="quantity" value="1" min="1" max="{{ product.pr_stk_quant }}" 
+                                       class="input join-item quantity-input w-24 text-center text-xl" id="quantityInput">
+                                <button class="btn join-item quantity-btn w-12 h-12 text-xl" type="button" onclick="incrementQuantity()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary-sn flex-grow text-xl py-4">
+                            <i class="fas fa-cart-plus mr-3"></i> {# More specific cart icon #}
+                            Add to Cart
+                        </button>
+                    </form>
+                {% else %}
+                    <button class="btn bg-sn-error text-white btn-lg flex-grow text-xl font-semibold opacity-70 cursor-not-allowed" disabled>
+                        <i class="fas fa-ban mr-3"></i>
+                        Out of Stock
+                    </button>
+                {% endif %}
+                
+                {% if user.is_authenticated %}
+                    <a href="{% url 'add_to_wishlist' product.pr_id %}" 
+                       class="btn btn-outline-sn flex-grow text-xl py-4">
+                        <i class="fas fa-heart mr-3"></i>
+                        Add to Wishlist
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" 
+                       class="btn btn-outline-sn flex-grow text-xl py-4">
+                        <i class="fas fa-sign-in-alt mr-3"></i>
+                        Login to Purchase
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-24">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-10 animate-slide-up-content">
+            <h2 class="text-4xl font-heading text-sn-text-light mb-4 sm:mb-0">Customer Reviews</h2>
+            <button class="btn btn-outline-sn px-8 py-3 text-lg">
+                <i class="fas fa-pen-fancy mr-3"></i> Write a Review
+            </button>
+        </div>
+        
+        {% if reviews %}
+            <div class="space-y-8">
+                {% for review in reviews %}
+                <div class="card review-card rounded-xl overflow-hidden p-8 animate-fade-in" style="animation-delay: {{ loop.index0|stringformat:"%.1f" }}s;">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 mb-5">
+                        <div class="flex items-center gap-4">
+                            <div class="avatar placeholder">
+                                <div class="review-avatar text-sn-bg-primary rounded-full w-14 h-14 flex items-center justify-center text-xl font-bold">
+                                    <span>{{ review.user.username|first|upper }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-sn-text-light text-lg">{{ review.user.username }}</div>
+                                <div class="text-sm text-sn-text-muted">{{ review.created_at|date:"F j, Y" }}</div>
+                            </div>
+                        </div>
+                        <div class="rating rating-lg">
+                            {% for i in "12345" %}
+                                <input type="radio" 
+                                       class="mask mask-star-2 {% if forloop.counter <= review.rating %}bg-sn-accent-main{% else %}bg-sn-text-muted opacity-30{% endif %}" 
+                                       disabled />
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    {% if review.comment %}
+                        <div class="prose max-w-none review-text-prose text-sn-text-muted leading-relaxed">
+                            <p>{{ review.comment|linebreaks }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-16 rounded-xl review-empty-state animate-fade-in">
+                <div class="w-24 h-24 review-empty-icon-circle rounded-full flex items-center justify-center mx-auto mb-8 animate-border-pulse">
+                    <i class="fas fa-comment-alt text-4xl text-sn-accent-main"></i> {# New icon #}
+                </div>
+                <h3 class="text-3xl font-heading text-sn-text-light mb-4">No Reviews Yet</h3>
+                <p class="text-sn-text-muted max-w-md mx-auto mb-8 text-lg">Be the first to share your thoughts on this exquisite product!</p>
+                <button class="btn btn-primary-sn px-10 py-3 text-lg">
+                    <i class="fas fa-pen-nib mr-3"></i> Submit Your Review
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function incrementQuantity() {
+        const input = document.getElementById('quantityInput');
+        const max = parseInt(input.max);
+        if (parseInt(input.value) < max) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+    
+    function decrementQuantity() {
+        const input = document.getElementById('quantityInput');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    // Optional: Add logic for thumbnail selection if you implement multiple images
+    // document.querySelectorAll('.thumbnail-item').forEach(item => {
+    //     item.addEventListener('click', function() {
+    //         document.querySelectorAll('.thumbnail-item').forEach(thumb => thumb.classList.remove('active'));
+    //         this.classList.add('active');
+    //         // Logic to change main product image goes here
+    //     });
+    // });
+</script>
+{% endblock %}

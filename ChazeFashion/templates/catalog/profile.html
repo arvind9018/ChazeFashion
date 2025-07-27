@@ -1,0 +1,410 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - StyleNest{% endblock %}
+
+{% block content %}
+<style>
+    /* Specific styles for Profile page */
+    .profile-header {
+        color: var(--tw-colors-sn-text-light);
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 3rem;
+        letter-spacing: -0.02em;
+    }
+
+    .profile-summary-card, .edit-profile-card, .order-history-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        border-radius: 1.25rem; /* Consistent large radius */
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5); /* Deeper shadow */
+        padding: 2.5rem; /* Generous padding */
+        animation: fade-in 0.7s ease-out forwards;
+    }
+
+    /* Profile Summary Section */
+    .avatar-ring-profile {
+        border: 4px solid var(--tw-colors-sn-accent-main); /* Accent ring */
+        box-shadow: 0 0 0 4px var(--tw-colors-sn-bg-primary); /* Dark offset for depth */
+        position: relative;
+    }
+    .profile-summary-avatar-placeholder {
+        background-image: linear-gradient(to right bottom, var(--tw-colors-sn-accent-main), var(--tw-colors-sn-accent-light)); /* Gradient placeholder */
+        color: var(--tw-colors-sn-bg-primary); /* Dark text on gradient */
+    }
+    .profile-username {
+        color: var(--tw-colors-sn-text-light);
+        font-family: 'Playfair Display', serif;
+        font-size: 2.25rem; /* Larger username */
+        margin-top: 1.5rem; /* Space below avatar */
+    }
+    .profile-email {
+        color: var(--tw-colors-sn-text-muted);
+        font-size: 1.1rem;
+    }
+
+    /* Wallet Balance */
+    .wallet-card {
+        background-color: var(--tw-colors-sn-bg-primary); /* Darker background for wallet */
+        border: 1px solid var(--tw-colors-sn-border);
+        border-radius: 0.75rem;
+        padding: 1.5rem 1rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    .wallet-icon {
+        color: var(--tw-colors-sn-accent-main);
+        font-size: 2rem;
+    }
+    .wallet-label {
+        color: var(--tw-colors-sn-text-muted);
+        font-size: 0.95rem;
+    }
+    .wallet-balance {
+        color: var(--tw-colors-sn-text-light);
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+
+    /* Divider */
+    .divider-profile {
+        color: var(--tw-colors-sn-text-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.95rem;
+        margin: 2.5rem 0;
+        display: flex;
+        align-items: center;
+        text-align: center;
+    }
+    .divider-profile::before, .divider-profile::after {
+        content: '';
+        flex-grow: 1;
+        height: 1px;
+        background-color: var(--tw-colors-sn-border);
+        margin: 0 1rem;
+    }
+
+    /* Contact Info */
+    .contact-info-item {
+        display: flex;
+        align-items: flex-start; /* Align icon and text at top */
+        gap: 1rem;
+    }
+    .contact-info-icon-circle {
+        flex-shrink: 0;
+        width: 2.8rem;
+        height: 2.8rem;
+        border-radius: 9999px; /* Full circle */
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .contact-info-icon {
+        color: var(--tw-colors-sn-accent-main);
+        font-size: 1.25rem;
+    }
+    .contact-info-text {
+        color: var(--tw-colors-sn-text-light);
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    /* Edit Profile Section */
+    .edit-profile-title {
+        color: var(--tw-colors-sn-text-light);
+        font-family: 'Playfair Display', serif;
+        font-size: 2.25rem;
+        margin-bottom: 1.5rem;
+    }
+    /* Form control styling for profile form */
+    .profile-form-control label .label-text {
+        color: var(--tw-colors-sn-text-light);
+        font-weight: 500;
+        font-size: 1.05rem;
+        margin-bottom: 0.5rem;
+    }
+    .profile-form-input-container {
+        position: relative;
+    }
+    .profile-form-input-icon {
+        position: absolute;
+        inset-y: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        padding-left: 1.25rem;
+        color: var(--tw-colors-sn-text-muted);
+        font-size: 1.125rem;
+    }
+    .profile-form-input {
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-text-light);
+        padding-left: 3.5rem; /* Space for icon */
+        padding-right: 1.25rem;
+        height: 3.5rem;
+        font-size: 1.125rem;
+        border-radius: 0.5rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .profile-form-input:focus {
+        border-color: var(--tw-colors-sn-accent-main);
+        box-shadow: 0 0 0 2px rgba(224, 187, 228, 0.5);
+        outline: none;
+    }
+    .profile-form-input::placeholder {
+        color: var(--tw-colors-sn-text-muted);
+        opacity: 0.7;
+    }
+    .profile-form-textarea {
+        min-height: 8rem; /* Taller textarea */
+        resize: vertical; /* Allow vertical resizing */
+        padding-left: 1.25rem; /* No icon for textarea usually */
+    }
+
+    /* File input styling */
+    .profile-file-input {
+        display: block;
+        width: 100%;
+        text-sm;
+        color: var(--tw-colors-sn-text-muted);
+        padding: 0.75rem 0.5rem;
+        border: 1px solid var(--tw-colors-sn-border);
+        border-radius: 0.5rem;
+        background-color: var(--tw-colors-sn-bg-primary);
+        cursor: pointer;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
+    }
+    .profile-file-input:hover {
+        border-color: var(--tw-colors-sn-accent-main);
+        background-color: rgba(224, 187, 228, 0.05);
+    }
+    .profile-file-input::file-selector-button {
+        background-color: var(--tw-colors-sn-accent-main);
+        color: var(--tw-colors-sn-bg-primary);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        margin-right: 1rem;
+    }
+    .profile-file-input::file-selector-button:hover {
+        background-color: var(--tw-colors-sn-accent-light);
+        color: var(--tw-colors-sn-bg-primary);
+    }
+
+    .form-error-text {
+        color: var(--tw-colors-sn-error);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+    
+    /* Update Profile Button */
+    .btn-update-profile {
+        font-size: 1.15rem;
+        padding: 0.85rem 2.5rem;
+    }
+
+    /* Order History Empty State */
+    .order-history-empty-card {
+        text-align: center;
+        padding: 4rem 2rem;
+        animation: fade-in 0.7s ease-out forwards;
+    }
+    .order-history-icon-circle {
+        width: 6rem;
+        height: 6rem;
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2.5rem;
+        border-radius: 9999px;
+        animation: border-pulse 2s infinite ease-in-out;
+    }
+    .order-history-icon {
+        color: var(--tw-colors-sn-accent-main);
+        font-size: 3.5rem;
+    }
+    .order-history-empty-title {
+        color: var(--tw-colors-sn-text-light);
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    .order-history-empty-text {
+        color: var(--tw-colors-sn-text-muted);
+        font-size: 1.1rem;
+        max-width: 28rem;
+        margin: 0 auto 2rem;
+        line-height: 1.6;
+    }
+</style>
+
+<div class="container mx-auto px-6 py-12">
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-10 animate-slide-down">
+        <h1 class="text-4xl md:text-5xl profile-header mb-4 sm:mb-0">
+            <i class="fas fa-user-circle mr-4 text-sn-accent-main"></i>
+            My Profile
+        </h1>
+        <a href="{% url 'logout' %}" class="btn btn-outline-sn px-8 py-3 text-lg">
+            <i class="fas fa-sign-out-alt mr-3"></i> Logout
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div class="lg:col-span-1">
+            <div class="profile-summary-card text-center">
+                <div class="avatar mb-8">
+                    <div class="w-36 h-36 rounded-full avatar-ring-profile flex items-center justify-center overflow-hidden">
+                        {% if user_profile.avatar %}
+                            <img src="{{ user_profile.avatar.url }}" alt="{{ user.username }}" 
+                                 class="object-cover w-full h-full" />
+                        {% else %}
+                            <div class="w-full h-full rounded-full profile-summary-avatar-placeholder flex items-center justify-center">
+                                <span class="text-5xl font-bold">{{ user.username|first|upper }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <h2 class="profile-username mb-2">{{ user.username }}</h2>
+                <p class="profile-email mb-6">{{ user.email }}</p>
+                
+                <div class="wallet-card">
+                    <div class="flex items-center justify-center gap-4">
+                        <i class="fas fa-wallet wallet-icon"></i>
+                        <div>
+                            <p class="wallet-label">Wallet Balance</p>
+                            <p class="wallet-balance">${{ user_profile.wallet_balance|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="divider-profile">Contact Information</div>
+                
+                <div class="text-left space-y-5">
+                    {% if user_profile.phone %}
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon-circle">
+                                <i class="fas fa-phone contact-info-icon"></i>
+                            </div>
+                            <span class="contact-info-text">{{ user_profile.phone }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if user_profile.address %}
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon-circle">
+                                <i class="fas fa-map-marker-alt contact-info-icon"></i>
+                            </div>
+                            <span class="contact-info-text">{{ user_profile.address }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="lg:col-span-2">
+            <div class="edit-profile-card">
+                <h2 class="edit-profile-title mb-8">
+                    <i class="fas fa-user-edit mr-3 text-sn-accent-main"></i>
+                    Edit Profile Details
+                </h2>
+                
+                <form method="post" enctype="multipart/form-data" class="space-y-7">
+                    {% csrf_token %}
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-7">
+                        <div class="form-control profile-form-control">
+                            <label class="label">
+                                <span class="label-text">Phone Number</span>
+                            </label>
+                            <div class="profile-form-input-container">
+                                <span class="profile-form-input-icon">
+                                    <i class="fas fa-phone-alt"></i>
+                                </span>
+                                <input type="text" 
+                                       name="{{ form.phone.name }}" 
+                                       value="{{ form.phone.value|default_if_none:'' }}" 
+                                       class="input w-full profile-form-input"
+                                       placeholder="Enter your phone number"
+                                       {% if form.phone.field.required %}required{% endif %} />
+                            </div>
+                            {% if form.phone.errors %}
+                                <span class="label-text-alt form-error-text">{{ form.phone.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-control profile-form-control">
+                            <label class="label">
+                                <span class="label-text">Profile Picture</span>
+                            </label>
+                            <div class="profile-form-input-container">
+                                <input type="file" 
+                                       name="{{ form.avatar.name }}" 
+                                       class="profile-file-input"
+                                       {% if form.avatar.field.required %}required{% endif %} />
+                            </div>
+                            {% if form.avatar.errors %}
+                                <span class="label-text-alt form-error-text">{{ form.avatar.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-control md:col-span-2 profile-form-control">
+                            <label class="label">
+                                <span class="label-text">Delivery Address</span>
+                            </label>
+                            <div class="profile-form-input-container">
+                                <span class="profile-form-input-icon">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                </span>
+                                <textarea name="{{ form.address.name }}" 
+                                          class="textarea w-full profile-form-input profile-form-textarea"
+                                          placeholder="Enter your full delivery address"
+                                          {% if form.address.field.required %}required{% endif %}>{{ form.address.value|default_if_none:'' }}</textarea>
+                            </div>
+                            {% if form.address.errors %}
+                                <span class="label-text-alt form-error-text">{{ form.address.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-control pt-5">
+                        <button type="submit" 
+                                class="btn btn-primary-sn w-full btn-update-profile">
+                            <i class="fas fa-save mr-3"></i> Save Profile Updates
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="order-history-card mt-10">
+                <h2 class="edit-profile-title mb-8">
+                    <i class="fas fa-history mr-3 text-sn-accent-main"></i>
+                    Order History
+                </h2>
+                <div class="order-history-empty-card">
+                    <div class="order-history-icon-circle">
+                        <i class="fas fa-box-open order-history-icon"></i>
+                    </div>
+                    <h3 class="order-history-empty-title">No Orders Yet</h3>
+                    <p class="order-history-empty-text">Your past purchases will be displayed here once you start shopping with StyleNest.</p>
+                    <a href="{% url 'product_list' %}" class="btn btn-outline-sn px-10 text-lg mt-6">
+                        <i class="fas fa-shopping-bag mr-3"></i> Start Your First Order
+                    </a>
+                </div>
+         
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

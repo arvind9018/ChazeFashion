@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}My Wishlist - StyleNest{% endblock %}
+
+{% block content %}
+<style>
+    /* Specific styles for Wishlist page */
+    .wishlist-header {
+        color: var(--tw-colors-sn-text-light);
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 3rem;
+        letter-spacing: -0.02em;
+    }
+
+    .wishlist-item-count {
+        color: var(--tw-colors-sn-text-muted);
+        font-size: 1.15rem;
+    }
+    .wishlist-item-count .font-semibold {
+        color: var(--tw-colors-sn-accent-main);
+        font-size: 1.35rem; /* Larger count */
+    }
+
+    /* Product card styling (reusing product list card styles) */
+    .wishlist-product-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .wishlist-product-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        border-color: var(--tw-colors-sn-accent-main);
+    }
+
+    .product-image-wishlist {
+        transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .wishlist-product-card:hover .product-image-wishlist {
+        transform: scale(1.1);
+    }
+
+    .wishlist-quick-actions {
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out;
+    }
+    .wishlist-product-card:hover .wishlist-quick-actions {
+        opacity: 1;
+    }
+    .wishlist-action-btn {
+        background-color: rgba(255, 255, 255, 0.15); /* Semi-transparent background */
+        backdrop-filter: blur(5px); /* Frosted glass effect */
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: var(--tw-colors-sn-text-light);
+        transition: all 0.2s ease-in-out;
+    }
+    .wishlist-action-btn:hover {
+        background-color: var(--tw-colors-sn-accent-main);
+        color: var(--tw-colors-sn-bg-primary);
+        transform: scale(1.1);
+    }
+    .wishlist-action-btn.remove-btn:hover {
+        background-color: var(--tw-colors-sn-error); /* Red for remove action */
+        color: white;
+    }
+
+    /* Product card details text */
+    .product-title-wishlist {
+        color: var(--tw-colors-sn-text-light);
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    .wishlist-product-card:hover .product-title-wishlist {
+        color: var(--tw-colors-sn-accent-main);
+    }
+    .product-category-text, .product-brand-text {
+        color: var(--tw-colors-sn-text-muted);
+    }
+    .product-price-wishlist {
+        color: var(--tw-colors-sn-accent-main);
+        font-weight: 700;
+    }
+    .product-stock-status {
+        font-weight: 600;
+    }
+
+    /* Empty Wishlist State */
+    .empty-wishlist-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        border-radius: 1rem;
+        padding: 4rem 2rem;
+        animation: fade-in 0.7s ease-out forwards;
+    }
+    .empty-wishlist-icon-circle {
+        width: 6rem;
+        height: 6rem;
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2.5rem;
+        border-radius: 9999px;
+        animation: border-pulse 2s infinite ease-in-out;
+    }
+    .empty-wishlist-icon {
+        color: var(--tw-colors-sn-accent-main);
+        font-size: 3.5rem;
+    }
+    .empty-wishlist-title {
+        color: var(--tw-colors-sn-text-light);
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    .empty-wishlist-text {
+        color: var(--tw-colors-sn-text-muted);
+        font-size: 1.1rem;
+        max-width: 28rem;
+        margin: 0 auto 2rem;
+        line-height: 1.6;
+    }
+</style>
+
+<div class="container mx-auto px-6 py-12">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 animate-slide-down">
+        <div>
+            <h1 class="text-4xl md:text-5xl wishlist-header mb-4 md:mb-0">
+                <i class="fas fa-heart mr-4 text-sn-accent-main"></i>
+                My Wishlist
+            </h1>
+            <p class="text-lg text-sn-text-muted">Your curated selection of saved favorites.</p>
+        </div>
+        <div class="mt-6 md:mt-0">
+            {% if wishlist.products.all %}
+                <p class="wishlist-item-count">
+                    <span class="font-semibold">{{ wishlist.products.count }}</span> 
+                    item{{ wishlist.products.count|pluralize }} saved
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if wishlist.products.all %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {% for product in wishlist.products.all %}
+            <div class="wishlist-product-card animate-fade-in" style="animation-delay: {{ loop.index0|stringformat:"%.1f" }}s;">
+                <figure class="relative overflow-hidden h-64 bg-sn-bg-primary">
+                    {% if product.pr_images %}
+                        <img src="{{ product.pr_images.url }}" alt="{{ product.pr_name }}" 
+                             class="w-full h-full object-cover product-image-wishlist" />
+                    {% else %}
+                        <div class="w-full h-64 bg-sn-bg-primary flex items-center justify-center">
+                            <i class="fas fa-box-open text-7xl text-sn-text-muted opacity-40"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="absolute inset-0 bg-black bg-opacity-40 wishlist-quick-actions flex items-center justify-center space-x-4">
+                        <a href="{% url 'product_detail' product.pr_id %}" 
+                           class="btn btn-circle wishlist-action-btn text-xl">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        {% if product.pr_stk_quant > 0 %}
+                            <form action="{% url 'add_to_cart' product.pr_id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" 
+                                        class="btn btn-circle wishlist-action-btn text-xl">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                        <form action="{% url 'remove_from_wishlist' product.pr_id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    class="btn btn-circle wishlist-action-btn remove-btn text-xl">
+                                <i class="fas fa-trash-alt"></i> {# Trash can for remove #}
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="absolute top-4 left-4 flex flex-col items-start space-y-2">
+                        {% if product.pr_offers %}
+                            <span class="badge text-sm px-3 py-2 bg-sn-accent-main text-sn-bg-primary font-semibold shadow-md animate-pulse">
+                                {{ product.pr_offers }}
+                            </span>
+                        {% endif %}
+                        {% if product.pr_stk_quant < 5 and product.pr_stk_quant > 0 %}
+                            <span class="badge text-sm px-3 py-2 bg-sn-error text-white font-semibold shadow-md">
+                                Only {{ product.pr_stk_quant }} left
+                            </span>
+                        {% endif %}
+                    </div>
+                </figure>
+                
+                <div class="p-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
+                        <div>
+                            <h2 class="text-xl product-title-wishlist leading-tight mb-1">{{ product.pr_name }}</h2>
+                            <p class="text-sm product-category-text mb-2">{{ product.pr_cate }}</p>
+                        </div>
+                        <div class="text-3xl product-price-wishlist">
+                            ${{ product.pr_price|floatformat:2 }}
+                        </div>
+                    </div>
+                    
+                    {% if product.pr_brand %}
+                        <p class="text-sm product-brand-text mb-1"><span class="font-medium">Brand:</span> {{ product.pr_brand }}</p>
+                    {% endif %}
+                    
+                    <div class="flex items-center mt-3 mb-4">
+                        <div class="rating rating-sm mr-2">
+                            {% for i in "12345" %}
+                                <input type="radio" 
+                                       class="mask mask-star-2 {% if forloop.counter <= product.pr_reviews %}bg-sn-accent-main{% else %}bg-sn-text-muted opacity-30{% endif %}" 
+                                       disabled />
+                            {% endfor %}
+                        </div>
+                        <span class="text-xs text-sn-text-muted">({{ product.pr_reviews|floatformat:1 }})</span>
+                    </div>
+                    
+                    <div>
+                        {% if product.pr_stk_quant > 0 %}
+                            <span class="text-sm text-sn-success product-stock-status">
+                                <i class="fas fa-check-circle mr-1"></i> In Stock ({{ product.pr_stk_quant }} available)
+                            </span>
+                        {% else %}
+                            <span class="text-sm text-sn-error product-stock-status">
+                                <i class="fas fa-times-circle mr-1"></i> Out of Stock
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-actions mt-6">
+                        <a href="{% url 'product_detail' product.pr_id %}" 
+                           class="btn btn-outline-sn btn-sm w-full text-base">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-16 empty-wishlist-card">
+            <div class="empty-wishlist-icon-circle">
+                <i class="fas fa-heart empty-wishlist-icon"></i>
+            </div>
+            <h3 class="empty-wishlist-title">Your Wishlist is Empty</h3>
+            <p class="empty-wishlist-text">
+                Save your favorite items here to keep track of products you love!
+            </p>
+            <a href="{% url 'product_list' %}" class="btn btn-primary-sn px-10 text-lg mt-6">
+                <i class="fas fa-shopping-bag mr-3"></i> Browse Products
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - StyleNest{% endblock %}
+
+{% block content %}
+<style>
+    /* Specific styles for Sign Up page */
+    .signup-container {
+        min-height: calc(100vh - 8rem); /* Adjust for header/footer height */
+        background-color: var(--tw-colors-sn-bg-primary); /* Primary dark background */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .signup-card {
+        background-color: var(--tw-colors-sn-bg-secondary); /* Lighter dark for the card */
+        border: 1px solid var(--tw-colors-sn-border);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6); /* Deeper shadow */
+        border-radius: 1.5rem; /* More rounded corners */
+        overflow: hidden;
+        width: 100%;
+        max-width: 28rem; /* Consistent card width with login */
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother transition */
+    }
+    .signup-card:hover {
+        transform: translateY(-5px) scale(1.005); /* Subtle lift and scale */
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .card-header-signup {
+        background-image: linear-gradient(to right, var(--tw-colors-sn-accent-light), var(--tw-colors-sn-accent-main)); /* Reversed gradient for variety */
+        padding: 3rem 2rem; /* More padding */
+        text-align: center;
+        color: var(--tw-colors-sn-bg-primary);
+        position: relative;
+        overflow: hidden;
+    }
+    .card-header-signup::before { /* Subtle pattern overlay */
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+        z-index: 1;
+    }
+    .card-header-signup .content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .card-header-signup .header-icon-circle {
+        width: 4.5rem; /* Larger circle */
+        height: 4.5rem;
+        background-color: rgba(0, 0, 0, 0.15); /* Darker, more subtle background */
+        border: 1px solid rgba(0, 0, 0, 0.2); /* Subtle dark border */
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3); /* Inner shadow for depth */
+    }
+    .card-header-signup .header-icon {
+        font-size: 2.5rem; /* Larger icon */
+        color: var(--tw-colors-sn-bg-primary);
+    }
+    .card-header-signup .header-title {
+        font-size: 2.25rem; /* Larger title */
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        color: var(--tw-colors-sn-bg-primary);
+        line-height: 1.2;
+    }
+    .card-header-signup .header-subtitle {
+        color: var(--tw-colors-sn-bg-primary);
+        opacity: 0.8;
+        margin-top: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .card-body-signup {
+        padding: 2.5rem; /* Consistent padding */
+        background-color: var(--tw-colors-sn-bg-secondary);
+    }
+
+    /* Form control styling (reusing login's structure but for signup needs) */
+    .form-control-signup label .label-text {
+        color: var(--tw-colors-sn-text-light);
+        font-weight: 500;
+        font-size: 1.05rem;
+    }
+
+    .input-with-icon-signup {
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-text-light);
+        padding-left: 3rem;
+        padding-right: 1.25rem;
+        height: 3.5rem;
+        font-size: 1.125rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .input-with-icon-signup:focus {
+        border-color: var(--tw-colors-sn-accent-main);
+        box-shadow: 0 0 0 2px rgba(224, 187, 228, 0.5);
+        outline: none;
+    }
+    .input-icon-signup {
+        color: var(--tw-colors-sn-text-muted);
+        left: 1.25rem;
+        font-size: 1.125rem;
+    }
+    .form-error-text { /* For Django form errors */
+        color: var(--tw-colors-sn-error);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+    .password-info-text {
+        color: var(--tw-colors-sn-text-muted);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        line-height: 1.4;
+    }
+    .password-info-text i {
+        margin-right: 0.4rem;
+    }
+
+
+    /* Checkbox & Terms */
+    .checkbox-signup {
+        border: 1px solid var(--tw-colors-sn-border);
+        background-color: var(--tw-colors-sn-bg-primary);
+        color: var(--tw-colors-sn-accent-main); /* Checked color */
+        --chkbg: var(--tw-colors-sn-accent-main); /* DaisyUI checkbox background on check */
+        --chkborder: var(--tw-colors-sn-border); /* DaisyUI checkbox border */
+    }
+    .terms-text {
+        color: var(--tw-colors-sn-text-muted);
+        font-size: 0.95rem;
+    }
+    .terms-text a {
+        color: var(--tw-colors-sn-accent-main);
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    .terms-text a:hover {
+        color: var(--tw-colors-sn-accent-light);
+        text-decoration: underline;
+    }
+
+    /* Buttons */
+    .btn-signup-submit {
+        height: 3.5rem;
+        font-size: 1.3rem;
+        letter-spacing: 0.08em;
+    }
+
+    .login-section-signup {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--tw-colors-sn-border);
+    }
+    .login-section-signup p {
+        color: var(--tw-colors-sn-text-muted);
+        font-size: 1.05rem;
+        margin-bottom: 1rem;
+    }
+    .btn-login-link-signup {
+        font-size: 1.2rem;
+        padding: 0.8rem 2rem;
+        height: auto;
+    }
+</style>
+
+<div class="signup-container">
+    <div class="signup-card">
+        <div class="card-header-signup">
+            <div class="content">
+                <div class="header-icon-circle">
+                    <i class="fas fa-user-plus header-icon"></i>
+                </div>
+                <h2 class="header-title">Create Your StyleNest Account</h2>
+                <p class="header-subtitle">Unlock exclusive fashion and seamless shopping.</p>
+            </div>
+        </div>
+
+        <div class="card-body-signup">
+            {% if form.non_field_errors %}
+                <div class="alert alert-error mb-4">
+                    <div>
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>{{ form.non_field_errors.0 }}</span>
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="form-control form-control-signup">
+                    <label class="label">
+                        <span class="label-text">Username</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center input-icon-signup">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" 
+                               name="{{ form.username.name }}" 
+                               value="{{ form.username.value|default_if_none:'' }}" 
+                               class="input input-bordered w-full input-with-icon-signup"
+                               placeholder="Choose a unique username"
+                               {% if form.username.field.required %}required{% endif %}
+                               {% if form.username.field.max_length %}maxlength="{{ form.username.field.max_length }}"{% endif %} />
+                    </div>
+                    {% if form.username.errors %}
+                        <span class="label-text-alt form-error-text">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-control form-control-signup">
+                    <label class="label">
+                        <span class="label-text">Password</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center input-icon-signup">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" 
+                               name="{{ form.password1.name }}" 
+                               value="{{ form.password1.value|default_if_none:'' }}" 
+                               class="input input-bordered w-full input-with-icon-signup"
+                               placeholder="Create a strong password"
+                               {% if form.password1.field.required %}required{% endif %}
+                               {% if form.password1.field.max_length %}maxlength="{{ form.password1.field.max_length }}"{% endif %} />
+                    </div>
+                    {% if form.password1.errors %}
+                        <span class="label-text-alt form-error-text">{{ form.password1.errors.0 }}</span>
+                    {% endif %}
+                    <p class="password-info-text">
+                        <i class="fas fa-info-circle"></i> Passwords must be at least 8 characters.
+                    </p>
+                </div>
+                
+                <div class="form-control form-control-signup">
+                    <label class="label">
+                        <span class="label-text">Confirm Password</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center input-icon-signup">
+                            <i class="fas fa-lock-open"></i> {# Different icon for confirm #}
+                        </span>
+                        <input type="password" 
+                               name="{{ form.password2.name }}" 
+                               value="{{ form.password2.value|default_if_none:'' }}" 
+                               class="input input-bordered w-full input-with-icon-signup"
+                               placeholder="Re-enter your password"
+                               {% if form.password2.field.required %}required{% endif %}
+                               {% if form.password2.field.max_length %}maxlength="{{ form.password2.field.max_length }}"{% endif %} />
+                    </div>
+                    {% if form.password2.errors %}
+                        <span class="label-text-alt form-error-text">{{ form.password2.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-control">
+                    <label class="label cursor-pointer justify-start">
+                        <input type="checkbox" name="terms_agreement" class="checkbox checkbox-sm checkbox-signup mr-3" required />
+                        <span class="label-text terms-text">I agree to the <a href="#" class="font-medium">Terms of Service</a> and <a href="#" class="font-medium">Privacy Policy</a></span>
+                    </label>
+                </div>
+                
+                <div class="form-control mt-6">
+                    <button type="submit" class="btn btn-primary-sn w-full btn-signup-submit">
+                        <i class="fas fa-user-plus mr-3"></i> Register Account
+                    </button>
+                </div>
+            </form>
+            
+            <div class="divider my-6 text-sn-text-muted">OR</div>
+            
+            <div class="text-center login-section-signup">
+                <p>Already have an account?</p>
+                <a href="{% url 'login' %}" 
+                   class="btn btn-outline-sn btn-wide btn-login-link-signup">
+                    <i class="fas fa-sign-in-alt mr-3"></i> Login Here
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

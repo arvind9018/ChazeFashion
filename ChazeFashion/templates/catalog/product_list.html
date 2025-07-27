@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+
+{% block title %}Products - StyleNest{% endblock %}
+
+{% block content %}
+<style>
+    /* Specific styles for Product List page */
+    .filter-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        border-radius: 1rem;
+        padding: 2rem; /* More internal spacing */
+    }
+
+    .filter-label-text {
+        color: var(--tw-colors-sn-text-light); /* Labels are light text */
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-select, .filter-input {
+        background-color: var(--tw-colors-sn-bg-primary); /* Darker background for inputs */
+        border: 1px solid var(--tw-colors-sn-border);
+        color: var(--tw-colors-sn-text-light);
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        appearance: none; /* Remove default arrow for select */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23F0F0F0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); /* Custom SVG arrow */
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1.5em;
+    }
+
+    .filter-select:focus, .filter-input:focus {
+        border-color: var(--tw-colors-sn-accent-main);
+        box-shadow: 0 0 0 2px rgba(224, 187, 228, 0.4); /* Subtle glow */
+        outline: none;
+    }
+
+    .filter-input::placeholder {
+        color: var(--tw-colors-sn-text-muted); /* Muted placeholder text */
+        opacity: 0.7;
+    }
+    
+    .product-list-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .product-list-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        border-color: var(--tw-colors-sn-accent-main); /* Stronger border on hover */
+    }
+
+    .product-image-thumbnail {
+        transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .product-list-card:hover .product-image-thumbnail {
+        transform: scale(1.1); /* Zoom image on hover */
+    }
+
+    .product-hover-actions {
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out;
+    }
+    .product-list-card:hover .product-hover-actions {
+        opacity: 1;
+    }
+    .product-hover-action-btn {
+        background-color: rgba(255, 255, 255, 0.15); /* Semi-transparent background */
+        backdrop-filter: blur(5px); /* Frosted glass effect */
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: var(--tw-colors-sn-text-light);
+        transition: all 0.2s ease-in-out;
+    }
+    .product-hover-action-btn:hover {
+        background-color: var(--tw-colors-sn-accent-main);
+        color: var(--tw-colors-sn-bg-primary);
+        transform: scale(1.1); /* Pop effect */
+    }
+
+    /* Product card details text */
+    .product-title-list {
+        color: var(--tw-colors-sn-text-light);
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    .product-list-card:hover .product-title-list {
+        color: var(--tw-colors-sn-accent-main); /* Highlight title on hover */
+    }
+    .product-category-text, .product-brand-text, .product-fabric-text {
+        color: var(--tw-colors-sn-text-muted);
+    }
+    .product-price-list {
+        color: var(--tw-colors-sn-accent-main); /* Accent color for price */
+        font-weight: 700;
+    }
+    .product-stock-status {
+        font-weight: 600;
+    }
+
+    /* Empty state styling */
+    .empty-products-card {
+        background-color: var(--tw-colors-sn-bg-secondary);
+        border: 1px solid var(--tw-colors-sn-border);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        border-radius: 1rem;
+        padding: 4rem; /* More internal spacing */
+    }
+    .empty-icon-circle {
+        background-color: var(--tw-colors-sn-bg-primary);
+        border: 1px solid var(--tw-colors-sn-border);
+    }
+</style>
+
+<div class="container mx-auto px-6 py-12">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 animate-slide-up-content">
+        <div>
+            <h1 class="text-4xl md:text-5xl font-heading text-sn-text-light mb-3">The Full Collection</h1>
+            <p class="text-lg text-sn-text-muted">Explore every exquisite piece in our curated selection.</p>
+        </div>
+        <div class="mt-6 md:mt-0 text-right">
+            <p class="text-xl text-sn-text-muted">
+                Showing <span class="font-bold text-sn-accent-main">{{ products.count }}</span> 
+                product{{ products.count|pluralize }}
+            </p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+        <div class="lg:col-span-1 animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="filter-card sticky top-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-heading text-sn-text-light">Filters</h2>
+                    <a href="{% url 'product_list' %}" class="text-sm text-sn-accent-main hover:underline transition-colors">
+                        Reset All <i class="fas fa-redo-alt ml-1"></i>
+                    </a>
+                </div>
+                
+                <form method="get" class="space-y-8">
+                    <div class="form-control">
+                        <label class="label pb-2">
+                            <span class="label-text filter-label-text">Category</span>
+                        </label>
+                        <select name="category" 
+                                class="select filter-select w-full">
+                            <option value="">All Categories</option>
+                            {% for value, label in categories %}
+                                <option value="{{ value }}" 
+                                        {% if request.GET.category == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label pb-2">
+                            <span class="label-text filter-label-text">Season</span>
+                        </label>
+                        <select name="season" 
+                                class="select filter-select w-full">
+                            <option value="">All Seasons</option>
+                            {% for value, label in seasons %}
+                                <option value="{{ value }}" 
+                                        {% if request.GET.season == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label pb-2">
+                            <span class="label-text filter-label-text">Price Range</span>
+                        </label>
+                        <div class="flex gap-4">
+                            <input type="number" name="price_min" placeholder="Min" 
+                                   value="{{ request.GET.price_min }}" 
+                                   class="input filter-input w-1/2" />
+                            <span class="flex items-center text-sn-text-muted font-light">-</span>
+                            <input type="number" name="price_max" placeholder="Max" 
+                                   value="{{ request.GET.price_max }}" 
+                                   class="input filter-input w-1/2" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label pb-2">
+                            <span class="label-text filter-label-text">Fabric</span>
+                        </label>
+                        <input type="text" name="fabric" placeholder="e.g., Silk, Cotton" 
+                               value="{{ request.GET.fabric }}" 
+                               class="input filter-input w-full" />
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label pb-2">
+                            <span class="label-text filter-label-text">Brand</span>
+                        </label>
+                        <input type="text" name="brand" placeholder="e.g., Versace, Zara" 
+                               value="{{ request.GET.brand }}" 
+                               class="input filter-input w-full" />
+                    </div>
+                    
+                    <div class="form-control pt-6">
+                        <button type="submit" 
+                                class="btn btn-primary-sn w-full text-lg">
+                            Apply Filters <i class="fas fa-filter ml-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="lg:col-span-3 animate-fade-in" style="animation-delay: 0.2s;">
+            {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                {% for product in products %}
+                <div class="product-list-card animate-slide-up-content" style="animation-delay: {{ loop.index0|stringformat:"%.1f" }}s;">
+                    <figure class="relative overflow-hidden h-64 bg-sn-bg-primary">
+                        {% if product.pr_images %}
+                            <img src="{{ product.pr_images.url }}" alt="{{ product.pr_name }}" 
+                                 class="w-full h-full object-cover product-image-thumbnail" />
+                        {% else %}
+                            <div class="w-full h-full bg-sn-bg-primary flex items-center justify-center">
+                                <i class="fas fa-box-open text-7xl text-sn-text-muted opacity-40"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="absolute inset-0 bg-black bg-opacity-40 product-hover-actions flex items-center justify-center space-x-4">
+                            <a href="{% url 'product_detail' product.pr_id %}" 
+                               class="btn btn-circle product-hover-action-btn text-xl">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% if product.pr_stk_quant > 0 %}
+                                <form action="{% url 'add_to_cart' product.pr_id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" 
+                                            class="btn btn-circle product-hover-action-btn text-xl">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'add_to_wishlist' product.pr_id %}" 
+                                   class="btn btn-circle product-hover-action-btn text-xl">
+                                    <i class="fas fa-heart"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="absolute top-4 left-4 flex flex-col items-start space-y-2">
+                            {% if product.pr_offers %}
+                                <span class="badge text-sm px-3 py-2 bg-sn-accent-main text-sn-bg-primary font-semibold shadow-md animate-pulse">
+                                    {{ product.pr_offers }}
+                                </span>
+                            {% endif %}
+                            {% if product.pr_stk_quant < 5 and product.pr_stk_quant > 0 %}
+                                <span class="badge text-sm px-3 py-2 bg-sn-error text-white font-semibold shadow-md">
+                                    Only {{ product.pr_stk_quant }} left
+                                </span>
+                            {% endif %}
+                        </div>
+                    </figure>
+                    
+                    <div class="p-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
+                            <div>
+                                <h2 class="text-xl product-title-list leading-tight mb-1">{{ product.pr_name }}</h2>
+                                <p class="text-sm product-category-text mb-2">{{ product.pr_cate }}</p>
+                            </div>
+                            <div class="text-3xl product-price-list">
+                                ${{ product.pr_price|floatformat:2 }}
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center text-sm mb-3">
+                            <div class="rating rating-sm mr-2">
+                                {% for i in "12345" %}
+                                    <input type="radio" 
+                                           class="mask mask-star-2 {% if forloop.counter <= product.pr_reviews %}bg-sn-accent-main{% else %}bg-sn-text-muted opacity-30{% endif %}" 
+                                           disabled />
+                                {% endfor %}
+                            </div>
+                            <span class="text-sn-text-muted">({{ product.pr_reviews|floatformat:1 }})</span>
+                        </div>
+                        
+                        <p class="text-sm product-brand-text mb-1"><span class="font-medium">Brand:</span> {{ product.pr_brand }}</p>
+                        <p class="text-sm product-fabric-text mb-4"><span class="font-medium">Fabric:</span> {{ product.pr_fabric }}</p>
+                        
+                        <div class="mt-4">
+                            {% if product.pr_stk_quant > 0 %}
+                                <span class="text-sm text-sn-success product-stock-status">
+                                    <i class="fas fa-check-circle mr-1"></i> In Stock ({{ product.pr_stk_quant }} available)
+                                </span>
+                            {% else %}
+                                <span class="text-sm text-sn-error product-stock-status">
+                                    <i class="fas fa-times-circle mr-1"></i> Out of Stock
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-20 empty-products-card animate-fade-in">
+                <div class="w-24 h-24 empty-icon-circle rounded-full flex items-center justify-center mx-auto mb-8 animate-border-pulse">
+                    <i class="fas fa-box-open text-5xl text-sn-accent-main"></i> {# Consistent icon #}
+                </div>
+                <h3 class="text-3xl font-heading text-sn-text-light mb-4">No Products Found</h3>
+                <p class="text-sn-text-muted max-w-md mx-auto mb-10 text-lg">
+                    We couldn't find any products matching your current filters. Try adjusting your selections or view our entire collection.
+                </p>
+                <a href="{% url 'product_list' %}" class="btn btn-primary-sn px-10 text-lg">
+                    View All Products <i class="fas fa-globe ml-2"></i> {# New icon #}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
