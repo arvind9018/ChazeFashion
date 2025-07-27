@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - ChazeFashion{% endblock %}
+
+{% block content %}
+<h1 class="text-4xl font-bold text-center mb-8">Proceed to Checkout</h1>
+
+{% if cart_items %}
+    <div class="card bg-base-100 shadow-xl mx-auto max-w-2xl p-6 mb-8">
+        <h2 class="text-2xl font-bold mb-4">Order Summary</h2>
+        <div class="overflow-x-auto mb-4">
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.product.pr_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.product.pr_price|floatformat:2 }}</td>
+                        <td>${{ item.get_item_total|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-right font-bold text-xl">Grand Total:</td>
+                        <td class="font-bold text-xl">${{ total_price|floatformat:2 }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        {# Placeholder for address and payment method forms #}
+        <div class="space-y-4">
+            <h3 class="text-xl font-semibold">Shipping Address</h3>
+            <div class="card bg-base-200 p-4 rounded-lg">
+                <p><strong>{{ request.user.username }}</strong></p>
+                <p>{{ request.user.userprofile.address|default_if_none:"No address saved. Please update your profile." }}</p>
+                <p>{{ request.user.userprofile.phone|default_if_none:"No phone saved. Please update your profile." }}</p>
+                <a href="{% url 'profile' %}" class="btn btn-sm btn-outline mt-2">Update Profile Address</a>
+            </div>
+
+            <h3 class="text-xl font-semibold pt-4">Payment Method</h3>
+            <div class="card bg-base-200 p-4 rounded-lg">
+                <p>Cash on Delivery (COD) - Default</p>
+                {# In a real app, integrate with payment gateways here #}
+            </div>
+        </div>
+
+        <div class="flex justify-end mt-8">
+            <button class="btn btn-primary btn-lg">Place Order (Functionality TBD)</button>
+        </div>
+    </div>
+{% else %}
+    <div class="text-center py-10">
+        <p class="text-lg mb-4">Your cart is empty. Nothing to checkout!</p>
+        <a href="{% url 'product_list' %}" class="btn btn-primary">Start Shopping</a>
+    </div>
+{% endif %}
+
+{% endblock %}

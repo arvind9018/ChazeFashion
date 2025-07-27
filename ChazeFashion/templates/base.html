@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ChazeFashion - Your Style, Your Way{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'fashion-primary': '#6C63FF',
+                        'fashion-secondary': '#FF6584',
+                        'fashion-accent': '#42C2FF',
+                        'fashion-dark': '#1A1A2E',
+                        'fashion-light': '#F5F5F5',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    },
+                    transitionProperty: {
+                        'height': 'height',
+                        'spacing': 'margin, padding',
+                        'transform': 'transform',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom CSS for enhanced effects */
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #6C63FF;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .btn-fancy {
+            background-image: linear-gradient(to right, #6C63FF, #FF6584);
+            background-size: 200% auto;
+            transition: all 0.3s ease;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        }
+        
+        .btn-fancy:hover {
+            background-position: right center;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        }
+        
+        .social-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.2) translateY(-3px);
+        }
+        
+        .avatar-hover:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.3);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer-link {
+            transition: all 0.2s ease;
+        }
+        
+        .footer-link:hover {
+            color: #6C63FF;
+            transform: translateX(3px);
+        }
+        
+        /* Smooth page transitions */
+        body {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-fashion-light font-sans antialiased">
+    <!-- Navigation Bar -->
+    <div class="navbar bg-base-100 shadow-lg sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden hover:bg-fashion-primary hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+                    </svg>
+                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 animate-slide-up">
+                    <li><a href="{% url 'home' %}" class="nav-link">Home</a></li>
+                    <li><a href="{% url 'product_list' %}" class="nav-link">Products</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'wishlist' %}" class="nav-link">Wishlist</a></li>
+                        <li><a href="{% url 'profile' %}" class="nav-link">Profile</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <a href="{% url 'home' %}" class="btn btn-ghost text-xl hover:bg-transparent transition-all">
+                <i class="fas fa-tshirt text-fashion-primary"></i>
+                <span class="font-bold bg-gradient-to-r from-fashion-primary to-fashion-secondary bg-clip-text text-transparent">ChazeFashion</span>
+            </a>
+        </div>
+        
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1 gap-1">
+                <li><a href="{% url 'home' %}" class="nav-link px-4 py-2 font-medium text-fashion-dark hover:text-fashion-primary">Home</a></li>
+                <li><a href="{% url 'product_list' %}" class="nav-link px-4 py-2 font-medium text-fashion-dark hover:text-fashion-primary">Products</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'wishlist' %}" class="nav-link px-4 py-2 font-medium text-fashion-dark hover:text-fashion-primary">Wishlist</a></li>
+                    <li><a href="{% url 'profile' %}" class="nav-link px-4 py-2 font-medium text-fashion-dark hover:text-fashion-primary">Profile</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <div class="navbar-end">
+            <a href="{% url 'cart' %}" class="btn btn-ghost btn-circle">
+                <div class="indicator">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    {# Display cart total items from context processor #}
+                    {% if cart_total_items %}
+                        <span class="badge badge-sm indicator-item">{{ cart_total_items }}</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% if user.is_authenticated %}
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar avatar-hover transition-all">
+                        <div class="w-10 rounded-full">
+                            {% if user.userprofile.avatar %}
+                                <img src="{{ user.userprofile.avatar.url }}" alt="{{ user.username }}" class="transition-all" />
+                            {% else %}
+                                <div class="bg-fashion-primary text-white rounded-full w-10 h-10 flex items-center justify-center transition-all">
+                                    <span class="text-lg font-bold">{{ user.username|first|upper }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 animate-fade-in">
+                        <li><a href="{% url 'profile' %}" class="nav-link">Profile</a></li>
+                        <li><a href="{% url 'wishlist' %}" class="nav-link">Wishlist</a></li>
+                        <li><a href="{% url 'logout' %}" class="text-fashion-secondary hover:bg-fashion-secondary hover:text-white transition-all">Logout</a></li>
+                    </ul>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-fancy">Login</a>
+                <a href="{% url 'signup' %}" class="btn btn-outline ml-2 border-fashion-primary text-fashion-primary hover:bg-fashion-primary hover:text-white hover:border-fashion-primary transition-all">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mx-auto px-4 mt-4 animate-slide-up">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %} shadow-lg mb-4 transition-all duration-300 hover:shadow-xl">
+                    <div class="flex items-center">
+                        {% if message.tags == 'error' %}
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                        {% elif message.tags == 'success' %}
+                            <i class="fas fa-check-circle mr-2"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle mr-2"></i>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 animate-fade-in">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer footer-center p-10 bg-fashion-dark text-fashion-light rounded-t-3xl mt-16">
+        <nav class="grid grid-flow-col gap-4">
+            <a href="{% url 'home' %}" class="footer-link font-medium">Home</a>
+            <a href="{% url 'product_list' %}" class="footer-link font-medium">Products</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'wishlist' %}" class="footer-link font-medium">Wishlist</a>
+                <a href="{% url 'profile' %}" class="footer-link font-medium">Profile</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="footer-link font-medium">Login</a>
+                <a href="{% url 'signup' %}" class="footer-link font-medium">Sign Up</a>
+            {% endif %}
+        </nav> 
+        <nav>
+            <div class="grid grid-flow-col gap-6">
+                <a href="#" target="_blank" class="social-icon text-2xl text-pink-500 hover:text-pink-400 transition-colors"><i class="fab fa-instagram"></i></a>
+                <a href="#" target="_blank" class="social-icon text-2xl text-blue-500 hover:text-blue-400 transition-colors"><i class="fab fa-facebook"></i></a>
+                <a href="#" target="_blank" class="social-icon text-2xl text-red-500 hover:text-red-400 transition-colors"><i class="fab fa-pinterest"></i></a>
+                
+            </div>
+        </nav> 
+        <aside>
+            <p class="text-fashion-light opacity-80">Copyright © 2024 - All rights reserved by <span class="font-bold bg-gradient-to-r from-fashion-primary to-fashion-secondary bg-clip-text text-transparent">ChazeFashion</span></p>
+        </aside>
+    </footer>
+</body>
+</html>

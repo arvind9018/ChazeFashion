@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+
+{% block title %}ChazeFashion - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero min-h-[70vh] bg-gradient-to-r from-fashion-primary to-fashion-secondary relative overflow-hidden">
+    <div class="hero-content text-center text-neutral-content relative z-10 animate-slide-up">
+        <div class="max-w-2xl">
+            <h1 class="mb-6 text-5xl md:text-6xl font-bold leading-tight">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-200">Welcome to ChazeFashion</span>
+            </h1>
+            <p class="mb-8 text-lg md:text-xl opacity-90">Discover the latest trends in fashion. From casual wear to formal attire, we have everything you need to express your unique style.</p>
+            <a href="{% url 'product_list' %}" class="btn btn-fancy btn-lg px-8 text-lg font-semibold transition-all duration-300 hover:-translate-y-1">
+                Shop Now <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Animated fashion elements -->
+    <div class="absolute inset-0 overflow-hidden opacity-20">
+        <div class="absolute top-20 left-20 w-16 h-16 rounded-full bg-white animate-float"></div>
+        <div class="absolute top-1/3 right-1/4 w-24 h-24 rounded-full bg-white animate-float animation-delay-2000"></div>
+        <div class="absolute bottom-1/4 left-1/3 w-20 h-20 rounded-full bg-white animate-float animation-delay-3000"></div>
+        <div class="absolute bottom-20 right-20 w-12 h-12 rounded-full bg-white animate-float animation-delay-1500"></div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-20 bg-fashion-light">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4 text-fashion-dark">Shop by Category</h2>
+            <div class="w-24 h-1 bg-gradient-to-r from-fashion-primary to-fashion-secondary mx-auto"></div>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            <!-- Men's Category -->
+            <div class="card card-hover bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2">
+                <figure class="relative pt-[100%]">
+                    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600">
+                        <span class="text-6xl">👨</span>
+                    </div>
+                </figure>
+                <div class="card-body p-6 text-center">
+                    <h3 class="text-xl font-bold mb-2 text-fashion-dark">Men</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Stylish clothing for men</p>
+                    <a href="{% url 'product_list' %}?category=Men" class="btn btn-sm btn-outline border-fashion-primary text-fashion-primary hover:bg-fashion-primary hover:text-white transition-all">
+                        Shop Men
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Women's Category -->
+            <div class="card card-hover bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2">
+                <figure class="relative pt-[100%]">
+                    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-pink-500 to-rose-500">
+                        <span class="text-6xl">👩</span>
+                    </div>
+                </figure>
+                <div class="card-body p-6 text-center">
+                    <h3 class="text-xl font-bold mb-2 text-fashion-dark">Women</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Elegant fashion for women</p>
+                    <a href="{% url 'product_list' %}?category=Women" class="btn btn-sm btn-outline border-fashion-secondary text-fashion-secondary hover:bg-fashion-secondary hover:text-white transition-all">
+                        Shop Women
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Boys Category -->
+            <div class="card card-hover bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2">
+                <figure class="relative pt-[100%]">
+                    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-500 to-blue-500">
+                        <span class="text-6xl">👦</span>
+                    </div>
+                </figure>
+                <div class="card-body p-6 text-center">
+                    <h3 class="text-xl font-bold mb-2 text-fashion-dark">Boys</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Cool clothes for boys</p>
+                    <a href="{% url 'product_list' %}?category=Boys" class="btn btn-sm btn-outline border-fashion-accent text-fashion-accent hover:bg-fashion-accent hover:text-white transition-all">
+                        Shop Boys
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Girls Category -->
+            <div class="card card-hover bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2">
+                <figure class="relative pt-[100%]">
+                    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-500 to-fuchsia-500">
+                        <span class="text-6xl">👧</span>
+                    </div>
+                </figure>
+                <div class="card-body p-6 text-center">
+                    <h3 class="text-xl font-bold mb-2 text-fashion-dark">Girls</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Pretty dresses for girls</p>
+                    <a href="{% url 'product_list' %}?category=Girls" class="btn btn-sm btn-outline border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white transition-all">
+                        Shop Girls
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Toddler Category -->
+            <div class="card card-hover bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2">
+                <figure class="relative pt-[100%]">
+                    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-500">
+                        <span class="text-6xl">👶</span>
+                    </div>
+                </figure>
+                <div class="card-body p-6 text-center">
+                    <h3 class="text-xl font-bold mb-2 text-fashion-dark">Toddler</h3>
+                    <p class="text-gray-600 mb-4 text-sm">Comfortable baby clothes</p>
+                    <a href="{% url 'product_list' %}?category=Toddler" class="btn btn-sm btn-outline border-green-500 text-green-500 hover:bg-green-500 hover:text-white transition-all">
+                        Shop Toddler
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4 text-fashion-dark">Featured Products</h2>
+            <div class="w-24 h-1 bg-gradient-to-r from-fashion-primary to-fashion-secondary mx-auto"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in products %}
+            <div class="group relative bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
+                <!-- Product Image -->
+                <div class="relative overflow-hidden h-64">
+                    {% if product.pr_images %}
+                        <img src="{{ product.pr_images.url }}" alt="{{ product.pr_name }}" 
+                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    {% else %}
+                        <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                            <i class="fas fa-tshirt text-6xl text-gray-400"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Quick View Button -->
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <a href="{% url 'product_detail' product.pr_id %}" 
+                           class="btn btn-sm btn-primary transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                            Quick View
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Product Info -->
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-lg font-semibold text-gray-900">{{ product.pr_name }}</h3>
+                        <span class="text-lg font-bold text-fashion-primary">${{ product.pr_price }}</span>
+                    </div>
+                    
+                    <p class="text-sm text-gray-600 mb-3">{{ product.pr_cate }}</p>
+                    
+                    <!-- Rating -->
+                    <div class="flex items-center mb-4">
+                        <div class="rating rating-sm">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.pr_reviews %}
+                                    <input type="radio" name="rating-{{ product.pr_id }}" class="mask mask-star-2 bg-orange-400" checked disabled />
+                                {% else %}
+                                    <input type="radio" name="rating-{{ product.pr_id }}" class="mask mask-star-2 bg-orange-400" disabled />
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-xs text-gray-500 ml-2">({{ product.pr_reviews }})</span>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex justify-between">
+                        <a href="{% url 'product_detail' product.pr_id %}" class="btn btn-sm btn-outline border-gray-300 text-gray-700 hover:bg-gray-100">
+                            Details
+                        </a>
+                        {% if user.is_authenticated %}
+                            
+                            <form action="{% url 'add_to_cart' product.pr_id %}" method="post">
+                                    {% csrf_token %}
+                                    
+                                    <button type="submit" 
+                                            class="btn btn-sm btn-primary hover:bg-fashion-secondary transition-all">
+                                        <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
+                                    </button>
+                                </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-12">
+                <div class="inline-block p-6 bg-gray-100 rounded-full mb-6">
+                    <i class="fas fa-tshirt text-5xl text-gray-400"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-2 text-gray-800">No products available</h3>
+                <p class="text-gray-600 max-w-md mx-auto">We're currently updating our collection. Check back soon for exciting new arrivals!</p>
+                <a href="#" class="btn btn-outline mt-6 border-gray-300 text-gray-700 hover:bg-gray-100">
+                    Notify Me
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if products %}
+        <div class="text-center mt-12">
+            <a href="{% url 'product_list' %}" class="btn btn-lg btn-fancy px-8">
+                View All Products <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-20 bg-gradient-to-br from-gray-50 to-gray-100">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4 text-fashion-dark">Why Choose ChazeFashion?</h2>
+            <div class="w-24 h-1 bg-gradient-to-r from-fashion-primary to-fashion-secondary mx-auto"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Fast Delivery -->
+            <div class="bg-white p-8 rounded-xl shadow-lg text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                <div class="w-20 h-20 bg-gradient-to-r from-blue-100 to-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-truck text-3xl text-blue-500"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800">Fast Delivery</h3>
+                <p class="text-gray-600">Get your fashion items delivered to your doorstep quickly and safely with our express shipping options.</p>
+            </div>
+            
+            <!-- Quality Products -->
+            <div class="bg-white p-8 rounded-xl shadow-lg text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                <div class="w-20 h-20 bg-gradient-to-r from-emerald-100 to-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-gem text-3xl text-emerald-500"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800">Quality Products</h3>
+                <p class="text-gray-600">We offer only the highest quality clothing and accessories, carefully curated for style and durability.</p>
+            </div>
+            
+            <!-- Secure Shopping -->
+            <div class="bg-white p-8 rounded-xl shadow-lg text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+                <div class="w-20 h-20 bg-gradient-to-r from-purple-100 to-purple-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-shield-alt text-3xl text-purple-500"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800">Secure Shopping</h3>
+                <p class="text-gray-600">Your security is our priority with encrypted transactions and multiple safe payment options.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="py-16 bg-fashion-dark text-white">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-4">Stay Updated</h2>
+        <p class="text-gray-300 max-w-2xl mx-auto mb-8">Subscribe to our newsletter for exclusive offers, new arrivals, and fashion tips.</p>
+        
+        <form class="max-w-md mx-auto flex">
+            <input type="email" placeholder="Your email address" 
+                   class="flex-grow px-4 py-3 rounded-l-lg focus:outline-none text-gray-800">
+            <button type="submit" 
+                    class="bg-gradient-to-r from-fashion-primary to-fashion-secondary px-6 py-3 rounded-r-lg font-medium hover:opacity-90 transition-opacity">
+                Subscribe
+            </button>
+        </form>
+    </div>
+</section>
+
+<style>
+    /* Custom animations */
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .animation-delay-1500 {
+        animation-delay: 1.5s;
+    }
+    
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    
+    .animation-delay-3000 {
+        animation-delay: 3s;
+    }
+    
+    /* Custom hover effects */
+    .card-hover:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+</style>
+{% endblock %}

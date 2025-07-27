@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}Products - ChazeFashion{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Discover Our Collection</h1>
+            <p class="text-gray-600">Find the perfect style for every occasion</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+            <p class="text-gray-600">
+                Showing <span class="font-semibold text-fashion-primary">{{ products.count }}</span> 
+                product{{ products.count|pluralize }}
+            </p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Filters Sidebar -->
+        <div class="lg:col-span-1">
+            <div class="card bg-white shadow-sm rounded-xl sticky top-4">
+                <div class="card-body">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">Filters</h2>
+                        <a href="{% url 'product_list' %}" class="text-sm text-fashion-primary hover:underline">
+                            Reset All
+                        </a>
+                    </div>
+                    
+                    <form method="get" class="space-y-6">
+                        <!-- Category Filter -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium text-gray-700">Category</span>
+                            </label>
+                            <select name="category" 
+                                    class="select select-bordered w-full focus:ring-2 focus:ring-fashion-primary">
+                                <option value="">All Categories</option>
+                                {% for value, label in categories %}
+                                    <option value="{{ value }}" 
+                                            {% if request.GET.category == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Season Filter -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium text-gray-700">Season</span>
+                            </label>
+                            <select name="season" 
+                                    class="select select-bordered w-full focus:ring-2 focus:ring-fashion-primary">
+                                <option value="">All Seasons</option>
+                                {% for value, label in seasons %}
+                                    <option value="{{ value }}" 
+                                            {% if request.GET.season == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Price Range Filter -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium text-gray-700">Price Range</span>
+                            </label>
+                            <div class="flex gap-3">
+                                <input type="number" name="price_min" placeholder="Min" 
+                                       value="{{ request.GET.price_min }}" 
+                                       class="input input-bordered w-full focus:ring-2 focus:ring-fashion-primary" />
+                                <span class="flex items-center">-</span>
+                                <input type="number" name="price_max" placeholder="Max" 
+                                       value="{{ request.GET.price_max }}" 
+                                       class="input input-bordered w-full focus:ring-2 focus:ring-fashion-primary" />
+                            </div>
+                        </div>
+                        
+                        <!-- Fabric Filter -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium text-gray-700">Fabric</span>
+                            </label>
+                            <input type="text" name="fabric" placeholder="Cotton, Silk, etc." 
+                                   value="{{ request.GET.fabric }}" 
+                                   class="input input-bordered w-full focus:ring-2 focus:ring-fashion-primary" />
+                        </div>
+                        
+                        <!-- Brand Filter -->
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text font-medium text-gray-700">Brand</span>
+                            </label>
+                            <input type="text" name="brand" placeholder="Search by brand" 
+                                   value="{{ request.GET.brand }}" 
+                                   class="input input-bordered w-full focus:ring-2 focus:ring-fashion-primary" />
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="form-control pt-4">
+                            <button type="submit" 
+                                    class="btn btn-fancy w-full">
+                                Apply Filters
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product Grid -->
+        <div class="lg:col-span-3">
+            {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {% for product in products %}
+                <div class="card bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+                    <!-- Product Image -->
+                    <figure class="relative overflow-hidden">
+                        {% if product.pr_images %}
+                            <img src="{{ product.pr_images.url }}" alt="{{ product.pr_name }}" 
+                                 class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105" />
+                        {% else %}
+                            <div class="w-full h-64 bg-gray-100 flex items-center justify-center">
+                                <i class="fas fa-tshirt text-6xl text-gray-400"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Quick Actions (shown on hover) -->
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100 space-x-2">
+                            <a href="{% url 'product_detail' product.pr_id %}" 
+                               class="btn btn-circle btn-sm btn-ghost text-white hover:bg-white hover:text-fashion-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% if product.pr_stk_quant > 0 %}
+                                <form action="{% url 'add_to_cart' product.pr_id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" 
+                                            class="btn btn-circle btn-sm btn-ghost text-white hover:bg-white hover:text-fashion-primary">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'add_to_wishlist' product.pr_id %}" 
+                                   class="btn btn-circle btn-sm btn-ghost text-white hover:bg-white hover:text-fashion-primary">
+                                    <i class="fas fa-heart"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-3 left-3 flex flex-col items-start space-y-2">
+                            {% if product.pr_offers %}
+                                <span class="badge badge-accent shadow-md animate-pulse">
+                                    {{ product.pr_offers }}
+                                </span>
+                            {% endif %}
+                            {% if product.pr_stk_quant < 5 and product.pr_stk_quant > 0 %}
+                                <span class="badge badge-warning shadow-md">
+                                    Only {{ product.pr_stk_quant }} left
+                                </span>
+                            {% endif %}
+                        </div>
+                    </figure>
+                    
+                    <!-- Product Info -->
+                    <div class="card-body p-5">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h2 class="card-title text-lg font-bold text-gray-900 mb-1">{{ product.pr_name }}</h2>
+                                <div class="flex flex-wrap gap-1 mb-2">
+                                    <span class="badge badge-primary badge-sm">{{ product.pr_cate }}</span>
+                                    <span class="badge badge-secondary badge-sm">{{ product.pr_season }}</span>
+                                </div>
+                            </div>
+                            <div class="text-2xl font-bold text-fashion-primary">
+                                ${{ product.pr_price|floatformat:2 }}
+                            </div>
+                        </div>
+                        
+                        {% if product.pr_brand %}
+                            <p class="text-sm text-gray-600 mb-1"><span class="font-medium">Brand:</span> {{ product.pr_brand }}</p>
+                        {% endif %}
+                        
+                        {% if product.pr_fabric %}
+                            <p class="text-sm text-gray-600"><span class="font-medium">Fabric:</span> {{ product.pr_fabric }}</p>
+                        {% endif %}
+                        
+                        <!-- Rating -->
+                        <div class="flex items-center mt-3">
+                            <div class="rating rating-xs">
+                                {% for i in "12345" %}
+                                    <input type="radio" 
+                                           class="mask mask-star-2 {% if forloop.counter <= product.pr_reviews %}bg-orange-400{% else %}bg-gray-300{% endif %}" 
+                                           disabled />
+                                {% endfor %}
+                            </div>
+                            <span class="text-xs text-gray-500 ml-2">({{ product.pr_reviews|floatformat:1 }})</span>
+                        </div>
+                        
+                        <!-- Stock Status -->
+                        <div class="mt-4">
+                            {% if product.pr_stk_quant > 0 %}
+                                <span class="text-sm text-success">
+                                    <i class="fas fa-check-circle"></i> In Stock
+                                </span>
+                            {% else %}
+                                <span class="text-sm text-error">
+                                    <i class="fas fa-times-circle"></i> Out of Stock
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-16 bg-white rounded-xl shadow-sm">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-search text-3xl text-gray-400"></i>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-3">No products found</h3>
+                <p class="text-gray-600 max-w-md mx-auto mb-6">
+                    Try adjusting your filters or browse our full collection
+                </p>
+                <a href="{% url 'product_list' %}" class="btn btn-fancy px-8">
+                    View All Products
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styling for the filters sidebar */
+    .sticky {
+        position: -webkit-sticky;
+        position: sticky;
+    }
+    
+    /* Hover effect for product cards */
+    .group:hover .card-title {
+        color: #6C63FF;
+    }
+    
+    /* Animation for offer badges */
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    .animate-pulse {
+        animation: pulse 2s infinite;
+    }
+</style>
+{% endblock %}

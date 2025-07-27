@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - ChazeFashion{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+    <div class="card w-full max-w-md bg-white shadow-2xl rounded-xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
+        <!-- Card Header with Branding -->
+        <div class="bg-gradient-to-r from-fashion-primary to-fashion-secondary p-6 text-center">
+            <a href="{% url 'home' %}" class="inline-block">
+                <i class="fas fa-tshirt text-3xl text-white mr-2"></i>
+                <span class="text-2xl font-bold text-white">ChazeFashion</span>
+            </a>
+            <h2 class="mt-4 text-xl font-semibold text-white">Welcome Back</h2>
+        </div>
+        
+        <!-- Card Body -->
+        <div class="card-body p-8">
+            <!-- Messages/Alerts -->
+            {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}error{% else %}info{% endif %} rounded-lg">
+                        <div>
+                            <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Login Form -->
+            <form method="post" class="space-y-6 animate-fade-in">
+                {% csrf_token %}
+                
+                <!-- Username Field -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-medium text-gray-700">Username or Email</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" name="username" placeholder="Enter your username or email" 
+                               class="input input-bordered w-full pl-10 focus:ring-2 focus:ring-fashion-primary focus:border-transparent transition-all"
+                               required autofocus />
+                    </div>
+                </div>
+                
+                <!-- Password Field -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-medium text-gray-700">Password</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" name="password" placeholder="Enter your password" 
+                               class="input input-bordered w-full pl-10 focus:ring-2 focus:ring-fashion-primary focus:border-transparent transition-all"
+                               required />
+                    </div>
+                    
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="form-control mt-8">
+                    <button type="submit" 
+                            class="btn btn-fancy w-full py-3 text-lg font-semibold transition-all hover:-translate-y-0.5">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Login
+                    </button>
+                </div>
+            </form>
+            
+            
+            
+            <!-- Sign Up Link -->
+            <div class="text-center mt-6">
+                <p class="text-gray-600 mb-2">Don't have an account?</p>
+                <a href="{% url 'signup' %}" 
+                   class="btn btn-outline btn-wide border-fashion-primary text-fashion-primary hover:bg-fashion-primary hover:text-white transition-all">
+                    Create Account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    /* Custom input focus effect */
+    .input:focus {
+        box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+    }
+    
+    /* Custom shadow effect */
+    .shadow-3xl {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+</style>
+{% endblock %}
