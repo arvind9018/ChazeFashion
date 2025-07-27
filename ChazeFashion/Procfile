@@ -1,0 +1,5 @@
+
+
+web: python manage.py migrate && gunicorn ChazeFashion.wsgi
+
+web: gunicorn ChazeFashion.wsgi:application --bind 0.0.0.0:$PORT --log-file -
